@@ -82,9 +82,9 @@ int m35ReceiveData(char *data, int len, int timeoutMs)
 bool m35Init(void)
 {
 	int i;
-	static const int bauds[] = {57600, 19200, 115200, 9600};
+	static const int bauds[] = {57600, 19200};
 	char buf[20];
-	for (i = 0; i < 6; ++i) {
+	for (i = 0; i < 2; ++i) {
 		printf("Init gsm baud: %d\n", bauds[i]); 
 		usart3Configure(bauds[i]);
 		m35AtChat("AT\r", "OK", buf, 500);
@@ -94,7 +94,7 @@ bool m35Init(void)
 			break;
 		}
 	}
-	if (i >= 6) {
+	if (i >= 2) {
 		printf("All baud error\n"); 
 		return false;
 	}

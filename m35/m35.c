@@ -19,10 +19,10 @@ bool m35Startup(void)
 	ringBufferInit(&m_ringBuffer, m_buf, sizeof(m_buf));
 
 	GPIO_ResetBits(RESET_GPIO_GROUP, RESET_GPIO);
-	delayMs(1000);
+	delayMs(4000);
 
 	GPIO_SetBits(RESET_GPIO_GROUP, RESET_GPIO);
-	delayMs(3000);
+	delayMs(2000);
 
 	return true;
 }

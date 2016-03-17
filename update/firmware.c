@@ -77,6 +77,11 @@ bool downloadFirmwareToRam(void)
 	delayMs(10*1000);
 
 	// 设置连接网络的参数
+	if (!m35AtChat("AT+CGATT?\n", "+CGATT: 1", buf, 20000)) {
+		eprintf("S1 AT+CGATT? ERROR\n");
+		return false;
+	}
+	
 	if (!m35AtChat("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"\n", "OK", buf, 20000)) {
 		eprintf("S1 AT+SAPBR=3,1 ERROR\n");
 		return false;
@@ -104,13 +109,13 @@ bool downloadFirmwareToRam(void)
 	
 	dprintf("connect ftp\n");
 	// 连接FTP
-//	if (!m35FtpConnect(__mark->remotePath, __mark->ftpHost, __mark->ftpPort, 100000)) {
-//		return false;
-//	}
-//	
-	if (!m35FtpConnect("STM32.PAK", "61.190.61.78", 21, 100000)) {
+	if (!m35FtpConnect(__mark->remotePath, __mark->ftpHost, __mark->ftpPort, 100000)) {
 		return false;
 	}
+	
+//	if (!m35FtpConnect("STM32.PAK", "61.190.61.78", 21, 100000)) {
+//		return false;
+//	}
 	dprintf("download file\n");
 	
 	if (!m35FtpDownload()) {
@@ -263,7 +268,7 @@ bool programFromRam(void)
 			goto __exit;
 		}
 		
-		if ((__mark->type == 0) && (!writeBlockDataToFlash(block_Buf, addr, readLen))) {
+		if ((__mark->type == 1) && (!writeBlockDataToFlash(block_Buf, addr, readLen))) {
 			char buf[48];
 			sprintf(buf, "S2 WRITE %08X ERROR", addr);
 			eprintf("Write data to flash error\n");			
@@ -278,7 +283,7 @@ bool programFromRam(void)
 	FLASH_Lock();
 	
 	dprintf("programFromRam OK\n");	
-	if(__mark->type != 0){
+	if(__mark->type != 1){
 		setFirmwareUpdate(m_header->fileLength + m_header->headerLength, __mark->type);	
 	} else {
 		eraseupdatemark();
